@@ -117,37 +117,61 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named server
+# Target rules for targets named ChatServer
 
 # Build rule for target.
-server: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 server
-.PHONY : server
+ChatServer: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ChatServer
+.PHONY : ChatServer
 
 # fast build rule for target.
-server/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/build
-.PHONY : server/fast
+ChatServer/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ChatServer.dir/build.make CMakeFiles/ChatServer.dir/build
+.PHONY : ChatServer/fast
 
 #=============================================================================
-# Target rules for targets named client
+# Target rules for targets named ChatClient
 
 # Build rule for target.
-client: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 client
-.PHONY : client
+ChatClient: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ChatClient
+.PHONY : ChatClient
 
 # fast build rule for target.
-client/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/client.dir/build.make CMakeFiles/client.dir/build
-.PHONY : client/fast
+ChatClient/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ChatClient.dir/build.make CMakeFiles/ChatClient.dir/build
+.PHONY : ChatClient/fast
+
+Logger.o: Logger.cpp.o
+.PHONY : Logger.o
+
+# target to build an object file
+Logger.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ChatServer.dir/build.make CMakeFiles/ChatServer.dir/Logger.cpp.o
+.PHONY : Logger.cpp.o
+
+Logger.i: Logger.cpp.i
+.PHONY : Logger.i
+
+# target to preprocess a source file
+Logger.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ChatServer.dir/build.make CMakeFiles/ChatServer.dir/Logger.cpp.i
+.PHONY : Logger.cpp.i
+
+Logger.s: Logger.cpp.s
+.PHONY : Logger.s
+
+# target to generate assembly for a file
+Logger.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ChatServer.dir/build.make CMakeFiles/ChatServer.dir/Logger.cpp.s
+.PHONY : Logger.cpp.s
 
 client.o: client.cpp.o
 .PHONY : client.o
 
 # target to build an object file
 client.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/client.dir/build.make CMakeFiles/client.dir/client.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ChatClient.dir/build.make CMakeFiles/ChatClient.dir/client.cpp.o
 .PHONY : client.cpp.o
 
 client.i: client.cpp.i
@@ -155,7 +179,7 @@ client.i: client.cpp.i
 
 # target to preprocess a source file
 client.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/client.dir/build.make CMakeFiles/client.dir/client.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ChatClient.dir/build.make CMakeFiles/ChatClient.dir/client.cpp.i
 .PHONY : client.cpp.i
 
 client.s: client.cpp.s
@@ -163,7 +187,7 @@ client.s: client.cpp.s
 
 # target to generate assembly for a file
 client.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/client.dir/build.make CMakeFiles/client.dir/client.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ChatClient.dir/build.make CMakeFiles/ChatClient.dir/client.cpp.s
 .PHONY : client.cpp.s
 
 mainClient.o: mainClient.cpp.o
@@ -171,7 +195,7 @@ mainClient.o: mainClient.cpp.o
 
 # target to build an object file
 mainClient.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/client.dir/build.make CMakeFiles/client.dir/mainClient.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ChatClient.dir/build.make CMakeFiles/ChatClient.dir/mainClient.cpp.o
 .PHONY : mainClient.cpp.o
 
 mainClient.i: mainClient.cpp.i
@@ -179,7 +203,7 @@ mainClient.i: mainClient.cpp.i
 
 # target to preprocess a source file
 mainClient.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/client.dir/build.make CMakeFiles/client.dir/mainClient.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ChatClient.dir/build.make CMakeFiles/ChatClient.dir/mainClient.cpp.i
 .PHONY : mainClient.cpp.i
 
 mainClient.s: mainClient.cpp.s
@@ -187,7 +211,7 @@ mainClient.s: mainClient.cpp.s
 
 # target to generate assembly for a file
 mainClient.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/client.dir/build.make CMakeFiles/client.dir/mainClient.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ChatClient.dir/build.make CMakeFiles/ChatClient.dir/mainClient.cpp.s
 .PHONY : mainClient.cpp.s
 
 mainServer.o: mainServer.cpp.o
@@ -195,7 +219,7 @@ mainServer.o: mainServer.cpp.o
 
 # target to build an object file
 mainServer.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/mainServer.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ChatServer.dir/build.make CMakeFiles/ChatServer.dir/mainServer.cpp.o
 .PHONY : mainServer.cpp.o
 
 mainServer.i: mainServer.cpp.i
@@ -203,7 +227,7 @@ mainServer.i: mainServer.cpp.i
 
 # target to preprocess a source file
 mainServer.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/mainServer.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ChatServer.dir/build.make CMakeFiles/ChatServer.dir/mainServer.cpp.i
 .PHONY : mainServer.cpp.i
 
 mainServer.s: mainServer.cpp.s
@@ -211,7 +235,7 @@ mainServer.s: mainServer.cpp.s
 
 # target to generate assembly for a file
 mainServer.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/mainServer.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ChatServer.dir/build.make CMakeFiles/ChatServer.dir/mainServer.cpp.s
 .PHONY : mainServer.cpp.s
 
 server.o: server.cpp.o
@@ -219,7 +243,7 @@ server.o: server.cpp.o
 
 # target to build an object file
 server.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/server.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ChatServer.dir/build.make CMakeFiles/ChatServer.dir/server.cpp.o
 .PHONY : server.cpp.o
 
 server.i: server.cpp.i
@@ -227,7 +251,7 @@ server.i: server.cpp.i
 
 # target to preprocess a source file
 server.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/server.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ChatServer.dir/build.make CMakeFiles/ChatServer.dir/server.cpp.i
 .PHONY : server.cpp.i
 
 server.s: server.cpp.s
@@ -235,7 +259,7 @@ server.s: server.cpp.s
 
 # target to generate assembly for a file
 server.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/server.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ChatServer.dir/build.make CMakeFiles/ChatServer.dir/server.cpp.s
 .PHONY : server.cpp.s
 
 utility.o: utility.cpp.o
@@ -243,8 +267,8 @@ utility.o: utility.cpp.o
 
 # target to build an object file
 utility.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/utility.cpp.o
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/client.dir/build.make CMakeFiles/client.dir/utility.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ChatServer.dir/build.make CMakeFiles/ChatServer.dir/utility.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ChatClient.dir/build.make CMakeFiles/ChatClient.dir/utility.cpp.o
 .PHONY : utility.cpp.o
 
 utility.i: utility.cpp.i
@@ -252,8 +276,8 @@ utility.i: utility.cpp.i
 
 # target to preprocess a source file
 utility.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/utility.cpp.i
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/client.dir/build.make CMakeFiles/client.dir/utility.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ChatServer.dir/build.make CMakeFiles/ChatServer.dir/utility.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ChatClient.dir/build.make CMakeFiles/ChatClient.dir/utility.cpp.i
 .PHONY : utility.cpp.i
 
 utility.s: utility.cpp.s
@@ -261,8 +285,8 @@ utility.s: utility.cpp.s
 
 # target to generate assembly for a file
 utility.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/utility.cpp.s
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/client.dir/build.make CMakeFiles/client.dir/utility.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ChatServer.dir/build.make CMakeFiles/ChatServer.dir/utility.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ChatClient.dir/build.make CMakeFiles/ChatClient.dir/utility.cpp.s
 .PHONY : utility.cpp.s
 
 # Help Target
@@ -273,8 +297,11 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
-	@echo "... client"
-	@echo "... server"
+	@echo "... ChatClient"
+	@echo "... ChatServer"
+	@echo "... Logger.o"
+	@echo "... Logger.i"
+	@echo "... Logger.s"
 	@echo "... client.o"
 	@echo "... client.i"
 	@echo "... client.s"

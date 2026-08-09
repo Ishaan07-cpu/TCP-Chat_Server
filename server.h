@@ -1,18 +1,19 @@
 #pragma once
 
-#include<iostream>
-#include<string>
-#include<vector>
-#include<unordered_set>
-#include<thread>
-#include<mutex>
-#include<algorithm>
-#include<cctype>
-#include<ctime>
-#include<arpa/inet.h>
-#include<sys/socket.h>
-#include<netinet/in.h>
-#include<unistd.h>
+#include <iostream>
+#include <string>
+#include <vector>
+#include <unordered_set>
+#include <thread>
+#include <mutex>
+#include <algorithm>
+#include "Logger.h"
+#include <cctype>
+#include <ctime>
+#include <arpa/inet.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <unistd.h>
 
 using namespace std;
 
@@ -38,7 +39,8 @@ private:
     vector<Client> clients;
     unordered_set<string> usernames;
     mutex clientsMutex;
-    bool running;
+    bool running=false;
+    Logger logger;
     bool sendMessage(int clientSocket,const string &message);
     bool performHandshake(int clientSocket,string &username);
     int getSocketByUsername(const string &userName);
@@ -62,3 +64,4 @@ public:
     bool start();
     void stop();
 };
+

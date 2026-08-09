@@ -1,4 +1,4 @@
-/home/ishaan_umrao/Projects/TCP Chat Server/build/CMakeFiles/server.dir
-/home/ishaan_umrao/Projects/TCP Chat Server/build/CMakeFiles/client.dir
+/home/ishaan_umrao/Projects/TCP Chat Server/build/CMakeFiles/ChatServer.dir
+/home/ishaan_umrao/Projects/TCP Chat Server/build/CMakeFiles/ChatClient.dir
 /home/ishaan_umrao/Projects/TCP Chat Server/build/CMakeFiles/edit_cache.dir
 /home/ishaan_umrao/Projects/TCP Chat Server/build/CMakeFiles/rebuild_cache.dir

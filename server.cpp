@@ -1,4 +1,5 @@
 #include "server.h"
+#include "Logger.h"
 #include "utility.h"
 
 const int PORT=3490;
@@ -12,14 +13,13 @@ const string EMPTY_USERNAME="Username cannot be empty.\n";
 const string USERNAME_TOO_LONG="Username cannot exceed 20 characters.\n";
 const string USERNAME_EXISTS="Username already taken.\n";
 
-ChatServer::ChatServer(){
-    serverSocket=-1;
-    running=false;
+ChatServer::ChatServer(): serverSocket(-1),clients(),clientsMutex(),running(false),logger("server.log"){
 }
 
 bool ChatServer::sendMessage(int clientSocket,const string &message){
     if(send(clientSocket,message.c_str(),message.size(),MSG_NOSIGNAL)==-1){
         perror("send");
+        logger.log(LogLevel::ERROR,"Failed to send message to socket "+to_string(clientSocket));
         return false;
     }
 
@@ -69,6 +69,7 @@ bool ChatServer::performHandshake(int clientSocket,string &username){
             if(!usernames.count(username)){
                 usernames.insert(username);
                 clients.push_back({clientSocket,username});
+                logger.log(LogLevel::INFO,username+" joined the chat");
 
                 if(!sendMessage(clientSocket,
                 "\n========================================\n"
@@ -81,6 +82,7 @@ bool ChatServer::performHandshake(int clientSocket,string &username){
 
                     usernames.erase(username);
                     clients.pop_back();
+                    logger.log(LogLevel::ERROR,"Failed to send welcome message to "+username);
 
                     return false;
                 }
@@ -94,6 +96,7 @@ bool ChatServer::performHandshake(int clientSocket,string &username){
 
     sendMessage(clientSocket,
     "Maximum username attempts exceeded.\n");
+    logger.log(LogLevel::WARNING,"Client failed username registration after maximum attempts");
 
     return false;
 }
@@ -126,6 +129,8 @@ bool ChatServer::changeUsername(int clientSocket,const string &newUsername,strin
     lock_guard<mutex> lock(clientsMutex);
 
     if(usernames.count(newUsername)){
+        logger.log(
+        LogLevel::WARNING,oldUsername+" attempted to change username to "+newUsername+" but it was already taken");
         return false;
     }
 
@@ -142,6 +147,7 @@ bool ChatServer::changeUsername(int clientSocket,const string &newUsername,strin
     it->username=newUsername;
 
     usernames.insert(newUsername);
+    logger.log(LogLevel::INFO,oldUsername+" changed username to "+newUsername);
 
     return true;
 }
@@ -155,6 +161,7 @@ bool ChatServer::processInput(const string &message,const string &username,int c
     }
 
     string formattedMessage=getTimeStamp()+" ["+username+"] "+message+"\n";
+    logger.log(LogLevel::INFO,username+" : "+message);
 
     cout<<formattedMessage;
 
@@ -295,16 +302,14 @@ bool ChatServer::processCommand(const string &message,const string &username,int
 
         if(sock==-1){
             sendMessage(clientSocket,"User does not exist.\n");
+            logger.log(LogLevel::WARNING,username+" attempted to message offline user "+privateUsername);
             return true;
         }
 
-        sendMessage(sock,
-        "[PRIVATE]\n"
-        +username+" : "+privateMessage+"\n");
+        sendMessage(sock,"[PRIVATE]\n"+username+" : "+privateMessage+"\n");
 
-        sendMessage(clientSocket,
-        "[PRIVATE -> "+privateUsername+"]\n"
-        +privateMessage+"\n");
+        sendMessage(clientSocket,"[PRIVATE -> "+privateUsername+"]\n"+privateMessage+"\n");
+        logger.log(LogLevel::INFO,username+" -> "+privateUsername+": "+privateMessage);
 
         return true;
     }
@@ -316,6 +321,7 @@ bool ChatServer::processCommand(const string &message,const string &username,int
     }
 
     sendMessage(clientSocket,"Unknown command. Type /help for help.\n");
+    logger.log(LogLevel::WARNING,"Unknown command from "+username+": "+message);
 
     return true;
 }
@@ -338,8 +344,7 @@ void ChatServer::handleClient(int clientSocket){
 
     cout<<"========================================"<<endl;
 
-    broadcast(getTimeStamp()+" [SERVER] "+username+
-    " joined the chat.\n",clientSocket);
+    broadcast(getTimeStamp()+" [SERVER] "+username+" joined the chat.\n",clientSocket);
 
     while(running){
 
@@ -349,6 +354,7 @@ void ChatServer::handleClient(int clientSocket){
 
             if(bytesReceived==-1){
                 perror("recv");
+                logger.log(LogLevel::ERROR,"recv() failed for "+username+" on socket "+to_string(clientSocket));
             }
 
             break;
@@ -372,6 +378,7 @@ void ChatServer::handleClient(int clientSocket){
     string removedUsername=removeClient(clientSocket);
 
     if(!removedUsername.empty()){
+        logger.log(LogLevel::INFO,removedUsername+" left the chat");
 
         broadcast(getTimeStamp()+" [SERVER] "+
         removedUsername+" left the chat.\n",
@@ -460,6 +467,7 @@ void ChatServer::acceptClients(){
         char clientIP[INET_ADDRSTRLEN];
 
         inet_ntop(AF_INET,&clientAddress.sin_addr,clientIP,INET_ADDRSTRLEN);
+        logger.log(LogLevel::INFO,"New connection from "+string(clientIP)+":"+to_string(ntohs(clientAddress.sin_port)));
 
         cout<<"\n========================================"<<endl;
         cout<<"[NEW CONNECTION]"<<endl;
@@ -478,6 +486,7 @@ bool ChatServer::createSocket(){
 
     if(serverSocket==-1){
         perror("socket");
+        logger.log(LogLevel::ERROR,"Failed to create server socket");
         return false;
     }
 
@@ -489,6 +498,7 @@ bool ChatServer::configureSocket(){
 
     if(setsockopt(serverSocket,SOL_SOCKET,SO_REUSEADDR,&opt,sizeof(opt))==-1){
         perror("setsockopt");
+        logger.log(LogLevel::ERROR,"Failed to configure server socket");
         close(serverSocket);
         serverSocket=-1;
         return false;
@@ -506,6 +516,7 @@ bool ChatServer::bindSocket(){
 
     if(bind(serverSocket,(sockaddr*)&serverAddress,sizeof(serverAddress))==-1){
         perror("bind");
+        logger.log(LogLevel::ERROR,"Failed to bind server socket");
         close(serverSocket);
         serverSocket=-1;
         return false;
@@ -517,6 +528,7 @@ bool ChatServer::bindSocket(){
 bool ChatServer::startListening(){
     if(listen(serverSocket,SOMAXCONN)==-1){
         perror("listen");
+        logger.log(LogLevel::ERROR,"Failed to start listening");
         close(serverSocket);
         serverSocket=-1;
         return false;
@@ -557,7 +569,7 @@ bool ChatServer::start(){
     }
 
     running=true;
-
+    logger.log(LogLevel::INFO,"Server started on port "+to_string(PORT));
     printBanner();
 
     acceptClients();
@@ -572,6 +584,7 @@ void ChatServer::stop(){
         close(serverSocket);
         serverSocket=-1;
     }
+    logger.log(LogLevel::INFO,"Server stopped");
 
     cout<<"\n=========================================="<<endl;
     cout<<"        SERVER SHUT DOWN"<<endl;
