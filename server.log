@@ -18,3 +18,37 @@
 2026-08-09 21:45:31 [INFO] New connection from 127.0.0.1:41156
 2026-08-09 21:45:35 [INFO] Ishaan Umrao joined the chat
 2026-08-09 21:45:39 [INFO] Ishaan Umrao left the chat
+2026-08-10 13:16:26 [INFO] Server started on port 3490
+2026-08-10 13:17:24 [INFO] New connection from 127.0.0.1:41168
+2026-08-10 13:17:39 [INFO] Ishaan joined the chat
+2026-08-10 13:17:58 [INFO] New connection from 127.0.0.1:49566
+2026-08-10 13:18:03 [INFO] UD joined the chat
+2026-08-10 13:18:42 [INFO] Ishaan : Hi
+2026-08-10 13:18:50 [INFO] UD : HI
+2026-08-10 13:19:20 [INFO] Ishaan changed username to Udayan
+2026-08-10 13:19:59 [INFO] Udayan -> UD: Hello
+2026-08-10 13:20:31 [WARNING] UD attempted to change username to Udayan but it was already taken
+2026-08-10 13:21:11 [INFO] Udayan left the chat
+2026-08-10 13:21:26 [INFO] UD left the chat
+2026-08-10 21:37:48 [INFO] Server socket created
+2026-08-10 21:37:48 [INFO] Server socket configured
+2026-08-10 21:37:48 [INFO] Server socket bound to port 8080
+2026-08-10 21:37:48 [INFO] Server is listening for connections
+2026-08-10 21:37:48 [INFO] Server started on port 8080
+2026-08-10 21:39:12 [INFO] Server socket created
+2026-08-10 21:39:12 [INFO] Server socket configured
+2026-08-10 21:39:12 [INFO] Server socket bound to port 3490
+2026-08-10 21:39:12 [INFO] Server is listening for connections
+2026-08-10 21:39:12 [INFO] Server started on port 3490
+2026-08-10 21:39:22 [INFO] New connection from 127.0.0.1 | Socket : 5
+2026-08-10 21:39:25 [INFO] Ishaan joined the chat
+2026-08-10 21:40:03 [INFO] Ishaan : hello
+2026-08-10 21:44:18 [INFO] Server socket created
+2026-08-10 21:44:18 [INFO] Server socket configured
+2026-08-10 21:44:18 [INFO] Server socket bound to port 3490
+2026-08-10 21:44:18 [INFO] Server is listening for connections
+2026-08-10 21:44:18 [INFO] Server started on port 3490
+2026-08-10 21:44:29 [INFO] New connection from 127.0.0.1 | Port : 53848 | Socket : 5
+2026-08-10 21:44:31 [INFO] Ishaan joined the chat
+2026-08-10 21:44:40 [INFO] Ishaan removed from client list
+2026-08-10 21:44:40 [INFO] Ishaan client thread ended

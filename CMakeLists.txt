@@ -10,6 +10,7 @@ find_package(Threads REQUIRED)
 add_executable(ChatServer
     mainServer.cpp
     server.cpp
+    Config.cpp
     utility.cpp
     Logger.cpp
 )
