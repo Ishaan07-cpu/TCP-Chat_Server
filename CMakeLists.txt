@@ -12,6 +12,7 @@ add_executable(ChatServer
     server.cpp
     Config.cpp
     utility.cpp
+    CommandParser.cpp
     Logger.cpp
 )
 

@@ -52,3 +52,21 @@
 2026-08-10 21:44:31 [INFO] Ishaan joined the chat
 2026-08-10 21:44:40 [INFO] Ishaan removed from client list
 2026-08-10 21:44:40 [INFO] Ishaan client thread ended
+2026-08-11 17:02:16 [INFO] Server socket created
+2026-08-11 17:02:16 [INFO] Server socket configured
+2026-08-11 17:02:16 [INFO] Server socket bound to port 3490
+2026-08-11 17:02:16 [INFO] Server is listening for connections
+2026-08-11 17:02:16 [INFO] Server started on port 3490
+2026-08-11 17:03:39 [INFO] Server socket created
+2026-08-11 17:03:39 [INFO] Server socket configured
+2026-08-11 17:03:39 [INFO] Server socket bound to port 3490
+2026-08-11 17:03:39 [INFO] Server is listening for connections
+2026-08-11 17:03:39 [INFO] Server started on port 3490
+2026-08-11 17:04:31 [INFO] New connection from 127.0.0.1 | Port : 50538 | Socket : 5
+2026-08-11 17:04:36 [INFO] Ishaan joined the chat
+2026-08-11 17:04:51 [INFO] Ishaan : Hello
+2026-08-11 17:04:56 [INFO] Ishaan : How are you?
+2026-08-11 17:05:09 [INFO] Ishaan changed username to Noob
+2026-08-11 17:05:23 [WARNING] Noob attempted to message offline user Ishaan
+2026-08-11 17:05:31 [INFO] Noob removed from client list
+2026-08-11 17:05:31 [INFO] Noob client thread ended

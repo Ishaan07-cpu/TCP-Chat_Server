@@ -9,6 +9,7 @@
 #include <cctype>
 #include "Logger.h"
 #include "Config.h"
+#include "CommandParser.h"
 #include <arpa/inet.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -42,14 +43,14 @@ private:
     int maxClients;
 
     Logger logger;
-
+    CommandParser commandParser;
     bool sendMessage(int clientSocket, const string &message);
     bool performHandshake(int clientSocket, string &username);
     int getSocketByUsername(const string &userName);
     string getUsername(int clientSocket);
     bool changeUsername(int clientSocket, const string &newUsername, string &oldUsername);
-    bool processInput(const string &message, const string &username, int clientSocket);
-    bool processCommand(const string &message, const string &username, int clientSocket);
+    bool processInput(const string &input,const string &username,int clientSocket);
+    bool processCommand(const ParsedCommand &parsed,const string &username,int clientSocket);
     void handleClient(int clientSocket);
     string removeClient(int clientSocket);
     void broadcast(const string &message, int excludeSocket = -1);

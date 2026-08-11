@@ -113,7 +113,7 @@ bool ChatClient::start(){
             continue;
         }
 
-        if(message=="exit"){
+        if(message=="/quit"){
             cout<<"Disconnecting..."<<endl;
             break;
         }

@@ -162,28 +162,26 @@ bool ChatServer::changeUsername(int clientSocket,const string &newUsername,strin
     return true;
 }
 
-bool ChatServer::processInput(const string &message,const string &username,int clientSocket){
-    if(message.empty()){
-        return true;
+bool ChatServer::processInput(const string &input,const string &username,int clientSocket){
+    ParsedCommand parsed = commandParser.parse(input);
+
+    if(!parsed.command.empty() && parsed.command[0] == '/'){
+        return processCommand(parsed,username,clientSocket);
     }
 
-    if(message[0]=='/'){
-        return processCommand(message,username,clientSocket);
-    }
+    string formattedMessage =getTimeStamp()+" ["+username+"] "+input+"\n";
 
-    string formattedMessage=getTimeStamp()+" ["+username+"] "+message+"\n";
+    logger.log(LogLevel::INFO,username+" : "+input);
 
-    logger.log(LogLevel::INFO,username+" : "+message);
-
-    cout<<formattedMessage;
+    cout << formattedMessage;
 
     broadcast(formattedMessage,clientSocket);
 
     return true;
 }
 
-bool ChatServer::processCommand(const string &message,const string &username,int clientSocket){
-    if(message=="/help"){
+bool ChatServer::processCommand(const ParsedCommand &parsed,const string &username,int clientSocket){
+    if(parsed.command=="/help"){
 
         sendMessage(clientSocket,
         "\n========================================\n"
@@ -199,7 +197,7 @@ bool ChatServer::processCommand(const string &message,const string &username,int
         return true;
     }
 
-    if(message=="/list"){
+    if(parsed.command=="/list"){
 
         string list;
 
@@ -224,52 +222,53 @@ bool ChatServer::processCommand(const string &message,const string &username,int
         return true;
     }
 
-    if(message.find("/nick")==0){
+    if(parsed.command == "/nick"){
 
-        size_t pos=message.find(' ');
-
-        if(pos==string::npos){
+        if(parsed.arguments.size() != 1){
             sendMessage(clientSocket,"Usage : /nick <new_username>\n");
             return true;
         }
 
-        string newUsername=trim(message.substr(pos+1));
+        string newUsername = trim(parsed.arguments[0]);
 
         if(newUsername.empty()){
             sendMessage(clientSocket,EMPTY_USERNAME);
             return true;
         }
 
-        if(newUsername.size()>MAX_USERNAME_LENGTH){
+        if(newUsername.size() > MAX_USERNAME_LENGTH){
             sendMessage(clientSocket,USERNAME_TOO_LONG);
             return true;
         }
 
-        if(newUsername.find(' ')!=string::npos){
-            sendMessage(clientSocket,"Username cannot contain spaces.\n");
+        if(newUsername.find(' ') != string::npos){
+            sendMessage(
+                clientSocket,
+                "Username cannot contain spaces.\n"
+            );
             return true;
         }
 
-        string oldUsername=getUsername(clientSocket);
+        string oldUsername = getUsername(clientSocket);
 
-        if(newUsername==oldUsername){
-            sendMessage(clientSocket,
-            "You are already using this username.\n");
+        if(newUsername == oldUsername){
+            sendMessage(clientSocket,"You are already using this username.\n");
             return true;
         }
 
         if(changeUsername(clientSocket,newUsername,oldUsername)){
 
-            sendMessage(clientSocket,
-            "\n========================================\n"
-            " Username Updated Successfully\n"
-            "----------------------------------------\n"
-            "Old : "+oldUsername+"\n"
-            "New : "+newUsername+"\n"
-            "========================================\n");
+            sendMessage(
+                clientSocket,
+                "\n========================================\n"
+                " Username Updated Successfully\n"
+                "----------------------------------------\n"
+                "Old : "+oldUsername+"\n"
+                "New : "+newUsername+"\n"
+                "========================================\n"
+            );
 
-            broadcast(getTimeStamp()+" [SERVER] "+oldUsername+
-            " is now known as "+newUsername+"\n",clientSocket);
+            broadcast(getTimeStamp()+" [SERVER] "+oldUsername+" is now known as "+newUsername+"\n",clientSocket);
         }
         else{
             sendMessage(clientSocket,USERNAME_EXISTS);
@@ -278,67 +277,67 @@ bool ChatServer::processCommand(const string &message,const string &username,int
         return true;
     }
 
-    if(message.find("/msg")==0){
+    if(parsed.command == "/msg"){
 
-        size_t pos=message.find(' ');
-
-        if(pos==string::npos){
+        if(parsed.arguments.size() < 2){
             sendMessage(clientSocket,"Usage : /msg <username> <message>\n");
             return true;
         }
 
-        string restMsg=trim(message.substr(pos+1));
+        string privateUsername = parsed.arguments[0];
 
-        pos=restMsg.find(' ');
+        string privateMessage;
 
-        if(pos==string::npos){
-            sendMessage(clientSocket,"Usage : /msg <username> <message>\n");
-            return true;
+        for(size_t i = 1; i < parsed.arguments.size(); i++){
+
+            if(i > 1){
+                privateMessage += " ";
+            }
+
+            privateMessage += parsed.arguments[i];
         }
 
-        string privateUsername=restMsg.substr(0,pos);
-
-        if(privateUsername==username){
-            sendMessage(clientSocket,"You cannot send a private message to yourself.\n");
-            return true;
-        }
-
-        string privateMessage=trim(restMsg.substr(pos+1));
+        privateMessage = trim(privateMessage);
 
         if(privateMessage.empty()){
             sendMessage(clientSocket,"Message cannot be empty.\n");
             return true;
         }
 
-        int sock=getSocketByUsername(privateUsername);
-
-        if(sock==-1){
-            sendMessage(clientSocket,"User does not exist.\n");
-            logger.log(LogLevel::WARNING,username+" attempted to message offline user "+privateUsername);
+        if(privateUsername == username){
+            sendMessage(clientSocket,"You cannot send a private message to yourself.\n");
             return true;
         }
 
-        sendMessage(sock,"[PRIVATE]\n"+username+" : "+privateMessage+"\n");
+        int sock = getSocketByUsername(privateUsername);
 
-        sendMessage(clientSocket,"[PRIVATE -> "+privateUsername+"]\n"+privateMessage+"\n");
+        if(sock == -1){
 
-        logger.log(LogLevel::INFO,username+" -> "+privateUsername+": "+privateMessage);
+            sendMessage(clientSocket,"User does not exist.\n");
+
+            logger.log(LogLevel::WARNING,username +" attempted to message offline user " +privateUsername);
+
+            return true;
+        }
+
+        sendMessage(sock,"[PRIVATE]\n" +username +" : " +privateMessage +"\n");
+
+        sendMessage(clientSocket,"[PRIVATE -> " +privateUsername +"]\n" +privateMessage +"\n");
+
+        logger.log(LogLevel::INFO,username +" -> " +privateUsername +": " +privateMessage);
 
         return true;
     }
 
-    if(message=="/quit"){
+    if(parsed.command == "/quit"){
         sendMessage(clientSocket,"GoodBye "+username+"\n");
-
-        broadcast(getTimeStamp()+" [SERVER] "+username+
-        " disconnected.\n",clientSocket);
-
+        logger.log(LogLevel::INFO,username + " requested to quit");
         return false;
     }
 
     sendMessage(clientSocket,"Unknown command. Type /help for help.\n");
 
-    logger.log(LogLevel::WARNING,"Unknown command from "+username+": "+message);
+    logger.log(LogLevel::WARNING,"Unknown command from "+username+": ");
 
     return true;
 }
