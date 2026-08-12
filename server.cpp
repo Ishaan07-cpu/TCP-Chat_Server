@@ -13,16 +13,7 @@ const string EMPTY_USERNAME="Username cannot be empty.\n";
 const string USERNAME_TOO_LONG="Username cannot exceed 20 characters.\n";
 const string USERNAME_EXISTS="Username already taken.\n";
 
-ChatServer::ChatServer(const Config &config)
-    : serverSocket(-1),
-      clients(),
-      usernames(),
-      clientsMutex(),
-      running(false),
-      port(config.getPort()),
-      maxClients(config.getMaxClients()),
-      logger(config.getLogFile()){
-}
+ChatServer::ChatServer(const Config &config): serverSocket(-1), clients() ,usernames() ,clientsMutex(), running(false) ,port(config.getPort()), maxClients(config.getMaxClients()),logger(config.getLogFile()){}
 
 bool ChatServer::sendMessage(int clientSocket,const string &message){
     if(send(clientSocket,message.c_str(),message.size(),MSG_NOSIGNAL)==-1){
@@ -347,6 +338,10 @@ void ChatServer::handleClient(int clientSocket){
 
     if(!performHandshake(clientSocket,username)){
         close(clientSocket);
+        {
+            lock_guard<mutex> lock(clientsMutex);
+            activeSockets.erase(clientSocket);
+        }
 
         lock_guard<mutex> lock(clientsMutex);
 
@@ -404,8 +399,11 @@ void ChatServer::handleClient(int clientSocket){
 
     close(clientSocket);
 
-    logger.log(LogLevel::INFO,
-    username+" client thread ended");
+    logger.log(LogLevel::INFO,username+" client thread ended");
+    {
+        lock_guard<mutex> lock(clientsMutex);
+        activeSockets.erase(clientSocket);
+    }
 }
 
 string ChatServer::removeClient(int clientSocket){
@@ -463,6 +461,10 @@ void ChatServer::acceptClients(){
 
             continue;
         }
+        {
+            lock_guard<mutex> lock(clientsMutex);
+            activeSockets.insert(clientSocket);
+        }
 
         {
             lock_guard<mutex> lock(clientsMutex);
@@ -472,13 +474,10 @@ void ChatServer::acceptClients(){
                     clientSocket,
                     "Server is full. Please try again later.\n"
                 );
-
+                activeSockets.erase(clientSocket);
                 close(clientSocket);
 
-                logger.log(
-                    LogLevel::WARNING,
-                    "Connection rejected: maximum clients reached"
-                );
+                logger.log(LogLevel::WARNING,"Connection rejected: maximum clients reached");
 
                 continue;
             }
@@ -491,13 +490,7 @@ void ChatServer::acceptClients(){
 
         logger.log(LogLevel::INFO,"New connection from "+clientIP+" | Port : "+to_string(clientPort)+" | Socket : "+to_string(clientSocket));
 
-        thread clientThread(
-            &ChatServer::handleClient,
-            this,
-            clientSocket
-        );
-
-        clientThread.detach();
+        clientThreads.emplace_back(&ChatServer::handleClient, this, clientSocket);
     }
 }
 
@@ -605,10 +598,7 @@ void ChatServer::printBanner(){
 
 bool ChatServer::start(){
     if(running){
-        logger.log(
-            LogLevel::WARNING,
-            "Server is already running"
-        );
+        logger.log(LogLevel::WARNING,"Server is already running");
 
         return false;
     }
@@ -629,17 +619,19 @@ bool ChatServer::start(){
         return false;
     }
 
-    running=true;
-
-    logger.log(
-        LogLevel::INFO,
-        "Server started on port "+to_string(port)
-    );
-
+    
+    logger.log(LogLevel::INFO, "Server started on port "+to_string(port));
+    
     printBanner();
-
+    
+    running=true;
     acceptClients();
-
+    
+    for(auto& thread : clientThreads){
+        if(thread.joinable()){
+            thread.join();
+        }
+    }
     return true;
 }
 
@@ -648,17 +640,29 @@ void ChatServer::stop(){
         return;
     }
 
-    running=false;
+    running = false;
 
-    shutdown(serverSocket,SHUT_RDWR);
-    close(serverSocket);
+    if(serverSocket != -1){
+        shutdown(serverSocket, SHUT_RDWR);
+        close(serverSocket);
+        serverSocket = -1;
+    }
 
-    serverSocket=-1;
+    vector<int> clientSockets;
 
-    logger.log(
-        LogLevel::INFO,
-        "Server stopped"
-    );
+    {
+        lock_guard<mutex> lock(clientsMutex);
+
+        for (int socket : activeSockets) {
+            clientSockets.push_back(socket);
+        }
+    }
+
+    for (int socket : clientSockets) {
+        shutdown(socket, SHUT_RDWR);
+    }
+
+    logger.log(LogLevel::INFO,"Server stopped");
 
     cout<<"\n=========================================="<<endl;
     cout<<"           SERVER STOPPED"<<endl;

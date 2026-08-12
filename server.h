@@ -7,6 +7,7 @@
 #include <mutex>
 #include <algorithm>
 #include <cctype>
+#include <atomic>
 #include "Logger.h"
 #include "Config.h"
 #include "CommandParser.h"
@@ -35,9 +36,11 @@ class ChatServer {
 private:
     int serverSocket;
     vector<Client> clients;
+    vector<thread> clientThreads;
     unordered_set<string> usernames;
+    unordered_set<int> activeSockets;
     mutex clientsMutex;
-    bool running = false;
+    atomic<bool> running = false;
 
     int port;
     int maxClients;

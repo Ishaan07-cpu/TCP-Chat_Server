@@ -3,6 +3,7 @@
 #include<iostream>
 #include<string>
 #include<thread>
+#include<atomic>
 
 #include<unistd.h>
 #include<arpa/inet.h>
@@ -18,6 +19,7 @@ extern const string SERVER_IP;
 class ChatClient{
 private:
     int clientSocket;
+    atomic<bool> connected;
 
     bool createSocket();
     bool connectToServer();
