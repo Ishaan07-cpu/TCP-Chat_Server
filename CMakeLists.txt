@@ -1,27 +1,24 @@
 cmake_minimum_required(VERSION 3.10)
 
-project(ChatProject)
+project(TCPChatServer)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Threads REQUIRED)
-
 add_executable(ChatServer
-    mainServer.cpp
-    server.cpp
-    Config.cpp
-    utility.cpp
-    CommandParser.cpp
-    Logger.cpp
+    src/mainServer.cpp
+    src/server.cpp
+    src/Config.cpp
+    src/Logger.cpp
+    src/CommandParser.cpp
+    src/utility.cpp
 )
 
-target_link_libraries(ChatServer PRIVATE Threads::Threads)
+target_include_directories(ChatServer PRIVATE include)
 
 add_executable(ChatClient
-    mainClient.cpp
-    client.cpp
-    utility.cpp
+    src/mainClient.cpp
+    src/client.cpp
 )
 
-target_link_libraries(ChatClient PRIVATE Threads::Threads)
+target_include_directories(ChatClient PRIVATE include)

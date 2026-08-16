@@ -13,7 +13,7 @@ void signalHandling(int signal){
 }
 
 int main() {
-    Config config("config.txt");
+    Config config("config/config.txt");
 
     ChatServer server(config);
 

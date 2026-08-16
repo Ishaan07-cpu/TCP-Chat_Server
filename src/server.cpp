@@ -392,9 +392,9 @@ void ChatServer::handleClient(int clientSocket){
     string disconnectedUsername=removeClient(clientSocket);
 
     if(!disconnectedUsername.empty()){
-        broadcast(getTimeStamp()+" [SERVER] "+
-        disconnectedUsername+" disconnected.\n",
-        clientSocket);
+        string disconnect=getTimeStamp()+" [SERVER] "+disconnectedUsername+" disconnected.\n";
+        broadcast(disconnect,clientSocket);
+        cout<<disconnect;
     }
 
     close(clientSocket);
